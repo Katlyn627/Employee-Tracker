@@ -1,0 +1,29 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "Employee Tracker",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "inquirer": "^8.2.0",
+    "nodemon": "^2.0.15"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Katlyn627/Employee-Tracker.git"
+  },
+  "keywords": [
+    "Employee",
+    "Tracker"
+  ],
+  "author": "Katlyn Boches",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Katlyn627/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/Katlyn627/Employee-Tracker#readme"
+}
