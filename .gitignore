@@ -1,6 +1,7 @@
 node_modules
 .env
 ds_store
+mysql
 
 # Logs
 logs
