@@ -55,6 +55,10 @@ function startPrompts() {
           addDepartment();
           break;
 
+        case "Update Employee Role":
+          updateEmployee();
+          break;
+
         case "Exit":
           exit();
           break;
@@ -107,9 +111,7 @@ function addEmployee() {
     },
   ])
     .then(function (answer) {
-      var query =
-        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
-      connection.query(
+      connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
         query,
         [answer.first_name, answer.last_name, answer.role_id, answer.mananager_id],
         function (err, res) {
@@ -142,9 +144,7 @@ function addRole() {
     },
   ])
     .then(function (answer) {
-      var query =
-        "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)";
-      connection.query(
+      connection.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)",
         query,
         [answer.title, answer.salary, answer.departmentID],
         function (err, res) {
@@ -163,20 +163,59 @@ function addDepartment() {
       name: "departmentName",
       type: "input",
       message: "What is the name of the department you would like to add?",
+      choices: [
+        "Sales",
+        "Engineering",
+        "Legal",
+        "Finance"
+      ]
     },
   ])
     .then(function (answer) {
-      var query = "INSERT INTO department (name) VALUE (?)";
-      connection.query(query, answer.departmentName, function (err, res) {
+      connection.query("INSERT INTO department (name) VALUE (?)", query, answer.departmentName, function (err, res) {
         if (err) throw err;
         console.log(`Successfully Added Department!`);
         startPrompts();
       });
     });
 }
+// Create function to update employee role
+function updateEmployee() {
+  inquirer.prompt([
+    {
+      name: "currentEmployeeID",
+      type: "input",
+      message: "What is the ID of the employee you would like update?",
+    },
+    {
+      name: "newRoleTitle",
+      type: "input",
+      message: "What is the title of their new role?",
+    },
+    {
+      name: "newRoleSalary",
+      type: "input",
+      message: "What is their new salary?",
+    },
+    {
+      name: "newRoleDeptID",
+      type: "list",
+      message: "What department will they belong to? Select 1 for Sales, 2 for Engineering, 3 for Finance, 4 for Legal.",
+      choices: [1, 2, 3, 4]
+    },
+  ])
+    .then(function (answer) {
+      connection.query("UPDATE role SET title = ?, salary = ?, department_id = ? WHERE id = ?", query, [answer.newRoleTitle, answer.newRoleSalary, answer.newRoleDeptID, parseInt(answer.currentEmployeeID)], function (err, res) {
+        if (err) throw (err);
+        console.log("Successful Update!");
+        startPrompts();
+      })
+    }
+    )
+}
 // Create exit function
 function exit() {
   process.exit();
 }
 
-module.exports = startPrompts;
+startPrompts();
