@@ -7,11 +7,7 @@ const express = require('express');
 const mysql = require('mysql2');
 // Create PORT and input express middleware
 const PORT = process.env.PORT || 3001;
-const app = express();
 
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 // Create connection to database
 const db = mysql.createConnection(
@@ -74,8 +70,15 @@ async function startPrompts() {
 }
 // Create add employee function
 
+
 async function addEmployee() {
-    
+    db.connect(function(err) {
+        if (err) throw err;
+        db.query("SELECT * FROM employees", function (err, result, fields) {
+          if (err) throw err;
+          console.table(result);
+        });
+      });   
 }
 
 // Create add department function
