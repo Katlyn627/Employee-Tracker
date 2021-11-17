@@ -58,7 +58,7 @@ function startPrompts() {
           break;
 
         case "Update Employee Role":
-          updateEmployee();
+          updateEmployeeRole();
           break;
 
         case "Exit":
@@ -67,29 +67,29 @@ function startPrompts() {
       }
     });
 }
-// Create view departments function
 function viewDepartments() {
-  connection.query("SELECT name, id FROM employees.department ORDER BY id asc",
-    function (err, res) {
-      console.table(res);
-      startPrompts();
-    });
+  let query = "SELECT name, id FROM employees.department ORDER BY id asc";
+  connection.query(query, function (err, res) {
+    console.table(res);
+    startPrompts();
+  });
 }
-// Create view employee function
+
 function viewEmployees() {
-  connection.query("SELECT employee.first_name, employee.last_name, role.title FROM employee, role WHERE employee.id = role.id;",
-    function (err, res) {
-      console.table(res);
-      startPrompts();
-    });
+  let query =
+    "SELECT employee.first_name, employee.last_name, role.title FROM employee, role WHERE employee.id = role.id;";
+  connection.query(query, function (err, res) {
+    console.table(res);
+    startPrompts();
+  });
 }
 // Create view role function
 function viewRoles() {
-  connection.query("SELECT role.title, role.salary, department.name FROM role, department WHERE department.id = role.department_id;",
-    function (err, res) {
-      console.table(res);
-      startPrompts();
-    });
+  let query = "SELECT role.title, role.salary, department.name FROM role, department WHERE department.id = role.department_id;";
+  connection.query(query, function (err, res) {
+    console.table(res);
+    startPrompts();
+  });
 }
 // Create add employee function
 function addEmployee() {
@@ -116,10 +116,14 @@ function addEmployee() {
     },
   ])
     .then(function (answer) {
-      connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+      let query =
+        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+      connection.query(
+        query,
+        [answer.first_name, answer.last_name, answer.role_id, answer.manager_id],
         function (err, res) {
           if (err) throw err;
-          console.log(`Successfully Added Employee: ${answer.first_name} ${answer.last_name}`);
+          console.log(`Successfully Added Employee: ${answer.firstName} ${answer.lastName}`);
           startPrompts();
         }
       );
@@ -147,9 +151,11 @@ function addRole() {
     },
   ])
     .then(function (answer) {
-      connection.query(`INSERT INTO role, function (err, res) {
+      let query = "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)";
+      connection.query(query, [answer.title, answer.salary, answer.departmentID],
+        function (err, res) {
           if (err) throw err;
-          console.log(`Successfully Added Role: ${ answer.title }`);
+          console.log(`Successfully Added Role: ${answer.title}`);
           startPrompts();
         }
       )
@@ -160,19 +166,14 @@ function addRole() {
 function addDepartment() {
   inquirer.prompt([
     {
-      name: "departmentName",
-      type: "input",
+      name: "department_name",
+      type: "list",
       message: "What is the name of the department you would like to add?",
-      choices: [
-        "Sales",
-        "Engineering",
-        "Legal",
-        "Finance"
-      ]
     },
   ])
     .then(function (answer) {
-      connection.query("INSERT INTO department (name) VALUE (?)", function (err, res) {
+      let query = "INSERT INTO department (name) VALUE (?)";
+      connection.query(query, answer.department_name, function (err, res) {
         if (err) throw err;
         console.log(`Successfully Added Department!`);
         startPrompts();
@@ -180,7 +181,7 @@ function addDepartment() {
     });
 }
 // Create function to update employee role
-function updateEmployee() {
+function updateEmployeeRole() {
   inquirer.prompt([
     {
       name: "currentEmployeeID",
@@ -205,7 +206,8 @@ function updateEmployee() {
     },
   ])
     .then(function (answer) {
-      connection.query("UPDATE role SET title = ?, salary = ?, department_id = ? WHERE id = ?", [answer.newRoleTitle, answer.newRoleSalary, answer.newRoleDeptID, parseInt(answer.currentEmployeeID)], function (err, res) {
+      let query = "UPDATE role SET title = ?, salary = ?, department_id = ? WHERE id = ?";
+      connection.query(query, [answer.newRoleTitle, answer.newRoleSalary, answer.newRoleDeptID, parseInt(answer.currentEmployeeID)], function (err, res) {
         if (err) throw (err);
         console.log("Successful Update!");
         startPrompts();
