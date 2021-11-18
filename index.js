@@ -148,7 +148,7 @@ function addRole() {
     },
     {
       name: "departmentID",
-      type: "input",
+      type: "list",
       message:
         "What is the Department ID for this new role? Please select 1 for Sales, 2 for Engineering, 3 for Finance, 4 for Legal.",
       choices: [1, 2, 3, 4],
