@@ -1,5 +1,4 @@
 // Import and require inquirer 
-const { query } = require("express");
 const inquirer = require("inquirer");
 
 //Import mysql
@@ -10,7 +9,7 @@ const mysql = require('mysql');
 
 const connection = mysql.createConnection({
   host: "localhost",
-  user: "-u root -h localhost -p",
+  user: "-u root -p",
   password: "KiB7557",
   database: "employees_db"
 });
