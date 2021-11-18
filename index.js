@@ -2,14 +2,13 @@
 const inquirer = require("inquirer");
 
 //Import mysql
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 // Create connection to mysql
 
-
 const connection = mysql.createConnection({
   host: "localhost",
-  user: "-u root -p",
+  user: "root",
   password: "KiB7557",
   database: "employees_db"
 });
@@ -70,7 +69,7 @@ function startPrompts() {
 function viewDepartments() {
   connection.connect(function (err) {
     if (err) throw err;
-    connection.query("SELECT * FROM employees_db", function (err, result, fields) {
+    connection.query("SELECT * FROM department", function (err, result) {
       if (err) throw err;
       console.table(result);
       startPrompts();
@@ -81,7 +80,7 @@ function viewDepartments() {
 function viewEmployees() {
   connection.connect(function (err) {
     if (err) throw err;
-    connection.query("SELECT employee.first_name, employee.last_name, role.title FROM employees_db, role WHERE employee.id = role.id", function (err, result, fields) {
+    connection.query("SELECT employee.first_name, employee.last_name, role.title FROM employees_db, role WHERE employee.id = role.id", function (err, result) {
       if (err) throw err;
       console.table(result);
       startPrompts();
@@ -92,7 +91,7 @@ function viewEmployees() {
 function viewRoles() {
   connection.connect(function (err) {
     if (err) throw err;
-    connection.query("SELECT role.title, role.salary, department.name FROM role, department WHERE department.id = role.department_id", function (err, result, fields) {
+    connection.query("SELECT role.title, role.salary, department.name FROM role, department WHERE department.id = role.department_id", function (err, result) {
       if (err) throw err;
       console.table(result);
       startPrompts();
@@ -126,7 +125,7 @@ function addEmployee() {
     .then(function (answer) {
       connection.connect(function (err) {
         if (err) throw err;
-        connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id)", function (err, result, fields) {
+        connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id)", function (err, result) {
           if (err) throw err;
           console.table(result);
           startPrompts();
@@ -158,10 +157,9 @@ function addRole() {
     .then(function (answer) {
       connection.connect(function (err) {
         if (err) throw err;
-        connection.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", function (err, result, fields) {
+        connection.query("INSERT INTO role SET name = ?", answer.name, function (err, result) {
           if (err) throw err;
-          console.table(result);
-          startPrompts();
+          viewRoles();
         });
       });
     });
@@ -170,18 +168,17 @@ function addRole() {
 function addDepartment() {
   inquirer.prompt([
     {
-      name: "department_name",
-      type: "list",
+      name: "name",
+      type: "input",
       message: "What is the name of the department you would like to add?",
     },
   ])
   .then(function (answer) {
     connection.connect(function (err) {
       if (err) throw err;
-      connection.query("INSERT INTO department (name) VALUE (?)", function (err, result, fields) {
+      connection.query("INSERT INTO department SET name = ?", answer.name, function (err, result) {
         if (err) throw err;
-        console.table(result);
-        startPrompts();
+        viewDepartments();
       });
     });
   });
@@ -214,7 +211,7 @@ function updateEmployeeRole() {
   .then(function (answer) {
     connection.connect(function (err) {
       if (err) throw err;
-      connection.query("UPDATE role SET title = ?, salary = ?, department_id = ? WHERE id = ?", function (err, result, fields) {
+      connection.query("UPDATE role SET title = ?, salary = ?, department_id = ? WHERE id = ?", function (err, result) {
         if (err) throw err;
         console.table(result);
         startPrompts();
