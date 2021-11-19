@@ -80,7 +80,20 @@ function viewDepartments() {
 function viewEmployees() {
   connection.connect(function (err) {
     if (err) throw err;
-    connection.query("SELECT employee.first_name, employee.last_name, role.title FROM employees_db, role WHERE employee.id = role.id", function (err, result) {
+    const query = `SELECT 
+    employee.id, 
+    employee.first_name, 
+    employee.last_name, 
+      role.title, 
+      department.name AS department, 
+      role.salary,
+      
+      CONCAT(manager.first_name, " ", manager.last_name) AS manager 
+      FROM employee 
+  LEFT JOIN role ON employee.role_id = role.id 
+  LEFT JOIN department ON role.department_id = department.id
+  LEFT JOIN employee manager ON manager.id = employee.manager_id `
+    connection.query(query, function (err, result) {
       if (err) throw err;
       console.table(result);
       startPrompts();
@@ -91,7 +104,7 @@ function viewEmployees() {
 function viewRoles() {
   connection.connect(function (err) {
     if (err) throw err;
-    connection.query("SELECT role.title, role.salary, department.name FROM role, department WHERE department.id = role.department_id", function (err, result) {
+    connection.query("SELECT * FROM role", function (err, result) {
       if (err) throw err;
       console.table(result);
       startPrompts();
@@ -117,7 +130,7 @@ function addEmployee() {
       message: "What is the employee's role ID?",
     },
     {
-      name: "mananger_id",
+      name: "manager_id",
       type: "input",
       message: "What is your manager ID?",
     },
@@ -125,10 +138,10 @@ function addEmployee() {
     .then(function (answer) {
       connection.connect(function (err) {
         if (err) throw err;
-        connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id)", function (err, result) {
+        connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
+        VALUES ("${answer.first_name}", "${answer.last_name}", ${answer.role_id}, ${answer.manager_id})`, function (err, result) {
           if (err) throw err;
-          console.table(result);
-          startPrompts();
+          viewEmployees();
         });
       });
     });
@@ -155,9 +168,11 @@ function addRole() {
     },
   ])
     .then(function (answer) {
+      console.log(answer);
       connection.connect(function (err) {
         if (err) throw err;
-        connection.query("INSERT INTO role SET name = ?", answer.name, function (err, result) {
+        connection.query(`INSERT INTO role (id, title, salary, department_id)
+        VALUES (DEFAULT, '${answer.title}', ${answer.salary}, ${answer.departmentID})`, function (err, result) {
           if (err) throw err;
           viewRoles();
         });
