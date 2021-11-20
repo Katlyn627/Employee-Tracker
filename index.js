@@ -26,6 +26,7 @@ function startPrompts() {
         "Add Department",
         "Add Role",
         "Add Employee",
+        "Update Employee Role",
         "Quit",
       ],
     })
@@ -174,6 +175,7 @@ function addRole() {
         connection.query(`INSERT INTO role (id, title, salary, department_id)
         VALUES (DEFAULT, '${answer.title}', ${answer.salary}, ${answer.departmentID})`, function (err, result) {
           if (err) throw err;
+          console.log("Successfully added new role to database!")
           viewRoles();
         });
       });
@@ -193,6 +195,7 @@ function addDepartment() {
       if (err) throw err;
       connection.query("INSERT INTO department SET name = ?", answer.name, function (err, result) {
         if (err) throw err;
+        console.log("Department successfully added to database!")
         viewDepartments();
       });
     });
@@ -226,7 +229,7 @@ function updateEmployeeRole() {
   .then(function (answer) {
     connection.connect(function (err) {
       if (err) throw err;
-      connection.query("UPDATE role SET title = ?, salary = ?, department_id = ? WHERE id = ?", function (err, result) {
+      connection.query(`UPDATE role SET title = ${answer.title} , salary = ${answer.salary}, department_id = ${answer.departmentID}, WHERE role_id = ${answer.role_id}`, function (err, result) {
         if (err) throw err;
         console.table(result);
         startPrompts();
