@@ -13,6 +13,7 @@ const connection = mysql.createConnection({
   database: "employees_db"
 });
 
+
 function startPrompts() {
   inquirer.prompt(
     {
@@ -164,8 +165,8 @@ function addRole() {
       name: "departmentID",
       type: "list",
       message:
-        "What is the Department ID for this new role? Please select 1 for Sales, 2 for Engineering, 3 for Finance, 4 for Legal.",
-      choices: [1, 2, 3, 4],
+        "What is the Department ID for this new role? Please select 1 for Sales, 2 for Engineering, 3 for Finance, 4 for Legal, 5 for Service, 6 for Production, 7 for Research and Development, 8 for Human Resources, 9 for Marketing, and 10 for Purchasing",
+      choices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     },
   ])
     .then(function (answer) {
@@ -207,7 +208,7 @@ function updateEmployeeRole() {
     {
       name: "currentEmployeeID",
       type: "input",
-      message: "What is the ID of the employee you would like update?",
+      message: "Which employee's role would you like to update?",
     },
     {
       name: "newRoleTitle",
@@ -229,7 +230,7 @@ function updateEmployeeRole() {
   .then(function (answer) {
     connection.connect(function (err) {
       if (err) throw err;
-      connection.query(`UPDATE role SET title = ${answer.title} , salary = ${answer.salary}, department_id = ${answer.departmentID}, WHERE role_id = ${answer.role_id}`, function (err, result) {
+      connection.query(`UPDATE employee.role SET role.title = ${answer.newRoleDeptID}, WHERE newRole = ${answer.newRoleTitle};`, function (err, result) {
         if (err) throw err;
         console.table(result);
         startPrompts();

@@ -4,6 +4,7 @@
   "description": "Employee Tracker",
   "main": "index.js",
   "dependencies": {
+    "asciiart-logo": "^0.2.6",
     "console.table": "^0.10.0",
     "dotenv": "^10.0.0",
     "inquirer": "^8.2.0",
