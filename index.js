@@ -13,7 +13,15 @@ const connection = mysql.createConnection({
   database: "employees_db"
 });
 
-
+let employees = [];
+// let resultsEmployee = ('SELECT id, first_name, last_name, CONCAT(employee.first_name, " ", employee.last_name) AS fullname FROM employee')
+let query = ("SELECT id, first_name, last_name FROM employee")
+connection.query(query, (err, results) => {
+  // console.log(results);
+  for (let i = 0; i < results.length; i++) {
+    employees.push(results[i])
+  }
+})
 function startPrompts() {
   inquirer.prompt(
     {
@@ -191,29 +199,31 @@ function addDepartment() {
       message: "What is the name of the department you would like to add?",
     },
   ])
-  .then(function (answer) {
-    connection.connect(function (err) {
-      if (err) throw err;
-      connection.query("INSERT INTO department SET name = ?", answer.name, function (err, result) {
+    .then(function (answer) {
+      connection.connect(function (err) {
         if (err) throw err;
-        console.log("Department successfully added to database!")
-        viewDepartments();
+        connection.query("INSERT INTO department SET name = ?", answer.name, function (err, result) {
+          if (err) throw err;
+          console.log("Department successfully added to database!")
+          viewDepartments();
+        });
       });
     });
-  });
 }
 // Create function to update employee role
 function updateEmployeeRole() {
+  console.log(employees);
+  console.log("Updating an employee");
   inquirer.prompt([
+    // {
+    //   name: "currentEmployeeID",
+    //   type: "input",
+    //   message: "Which employee's role would you like to update?",
+    // },
     {
-      name: "currentEmployeeID",
-      type: "input",
-      message: "Which employee's role would you like to update?",
-    },
-    {
-      name: "newRoleTitle",
-      type: "input",
-      message: "What is the title of their new role?",
+      name: "employee",
+      type: "list",
+      choices: employees,
     },
     {
       name: "newRoleSalary",
@@ -221,26 +231,27 @@ function updateEmployeeRole() {
       message: "What is their new salary?",
     },
     {
-      name: "newRoleDeptID",
+      name: "newRoleID",
       type: "list",
-      message: "What department will they belong to? Select 1 for Sales, 2 for Engineering, 3 for Finance, 4 for Legal.",
+      message: "What role will they belong to?",
       choices: [1, 2, 3, 4]
     },
   ])
-  .then(function (answer) {
-    connection.connect(function (err) {
-      if (err) throw err;
-      connection.query(`UPDATE employee.role SET role.title = ${answer.newRoleDeptID}, WHERE newRole = ${answer.newRoleTitle};`, function (err, result) {
+    .then(function (answer) {
+      console.log(answer);
+      console.log(+answer.newRoleSalary);
+      connection.query(`UPDATE employee SET role_id =  ${Number(answer.newRoleID)} WHERE id = ${answer.currentEmployeeID}`, function (err, result) {
         if (err) throw err;
-        console.table(result);
+        viewEmployees();
+        console.log("Employee Role updated successfully")
         startPrompts();
       });
     });
-  });
-}
+
 // Create exit function
 function exit() {
   process.exit();
+}
 }
 
 startPrompts();

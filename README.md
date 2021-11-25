@@ -4,6 +4,10 @@
 
 ## **Video Walkthrough of Project**
 
+![Employee_Tracker](https://user-images.githubusercontent.com/86095070/143359557-6d0c0e1d-6d4e-4c41-b2f3-7c6d783402dc.gif)
+
+
+Link to google drive walkthrough gif: https://drive.google.com/file/d/1MgTxndw00TGOUZbbw0XBjsWhdcqPQkUc/view?usp=sharing
 
 
 ## **Description**
