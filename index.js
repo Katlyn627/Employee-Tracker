@@ -14,13 +14,20 @@ const connection = mysql.createConnection({
 });
 
 let employees = [];
-// let resultsEmployee = ('SELECT id, first_name, last_name, CONCAT(employee.first_name, " ", employee.last_name) AS fullname FROM employee')
+// let employeeResults = ("SELECT first_name + ' ' + last_name AS full_name");
+// let restueEmployee = ("SELECT")
 let query = ("SELECT id, first_name, last_name FROM employee")
+
 connection.query(query, (err, results) => {
   // console.log(results);
   for (let i = 0; i < results.length; i++) {
+    var fullName = results[i].first_name + " " + results[i].last_name;
+    results[i].fullName = fullName;
+
+    // console.log(results[i]);
     employees.push(results[i])
   }
+  // console.log(employees);
 })
 function startPrompts() {
   inquirer.prompt(
@@ -213,6 +220,11 @@ function addDepartment() {
 // Create function to update employee role
 function updateEmployeeRole() {
   console.log(employees);
+  let nameChoices = [];
+for (i=0;i<employees.length; i++)
+{
+  nameChoices.push(employees[i].first_name + " " + employees[i].last_name);
+}
   console.log("Updating an employee");
   inquirer.prompt([
     // {
@@ -223,7 +235,7 @@ function updateEmployeeRole() {
     {
       name: "employee",
       type: "list",
-      choices: employees,
+      choices: nameChoices,
     },
     {
       name: "newRoleSalary",
