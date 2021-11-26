@@ -217,53 +217,55 @@ function addDepartment() {
       });
     });
 }
+let selectedEmployee;
 // Create function to update employee role
 function updateEmployeeRole() {
   console.log(employees);
   let nameChoices = [];
-for (i=0;i<employees.length; i++)
-{
-  nameChoices.push(employees[i].first_name + " " + employees[i].last_name);
-}
+
+  for (i = 0; i < employees.length; i++) {
+    nameChoices.push(
+      {
+        name: employees[i].first_name + " " + employees[i].last_name,
+        value: employees[i].id
+      });
+  }
+  console.log(nameChoices);
   console.log("Updating an employee");
   inquirer.prompt([
-    // {
-    //   name: "currentEmployeeID",
-    //   type: "input",
-    //   message: "Which employee's role would you like to update?",
-    // },
     {
       name: "employee",
       type: "list",
       choices: nameChoices,
-    },
-    {
-      name: "newRoleSalary",
-      type: "input",
-      message: "What is their new salary?",
-    },
-    {
-      name: "newRoleID",
-      type: "list",
-      message: "What role will they belong to?",
-      choices: [1, 2, 3, 4]
-    },
-  ])
-    .then(function (answer) {
-      console.log(answer);
-      console.log(+answer.newRoleSalary);
-      connection.query(`UPDATE employee SET role_id =  ${Number(answer.newRoleID)} WHERE id = ${answer.currentEmployeeID}`, function (err, result) {
-        if (err) throw err;
-        viewEmployees();
-        console.log("Employee Role updated successfully")
-        startPrompts();
-      });
-    });
+    }])
+    .then((answer) => {
+      selectedEmployee = answer;
+      inquirer.prompt([
+        {
+          name: "newRoleID",
+          type: "list",
+          message: "What role will they belong to?",
+          choices: [1, 2, 3, 4]
+        },
+      ])
+        .then(function (answer) {
+          console.log(selectedEmployee);
+          console.log(selectedEmployee.employee);
+          connection.query(`UPDATE employee SET role_id =  ${answer.newRoleID} WHERE id = ${selectedEmployee.employee}`, function (err, result) {
+            if (err) throw err;
+            viewEmployees();
+            console.log("Employee Role updated successfully")
+            startPrompts();
+          });
+        });
 
-// Create exit function
-function exit() {
-  process.exit();
-}
+    })
+
+
+  // Create exit function
+  function exit() {
+    process.exit();
+  }
 }
 
 startPrompts();
