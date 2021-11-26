@@ -13,11 +13,20 @@ const connection = mysql.createConnection({
   database: "employees_db"
 });
 
+let Exit = Exit();
 let employees = [];
+let roles = [];
 // let employeeResults = ("SELECT first_name + ' ' + last_name AS full_name");
 // let restueEmployee = ("SELECT")
 let query = ("SELECT id, first_name, last_name FROM employee")
-
+let rolesQuery = ("SELECT id, title FROM role")
+connection.query(rolesQuery, (err, results) => {
+  // console.log(results);
+  for (let i = 0; i < results.length; i++) {
+    roles.push(results[i])
+  }
+  // console.log(roles);
+})
 connection.query(query, (err, results) => {
   // console.log(results);
   for (let i = 0; i < results.length; i++) {
@@ -43,7 +52,7 @@ function startPrompts() {
         "Add Role",
         "Add Employee",
         "Update Employee Role",
-        "Quit",
+        "Exit",
       ],
     })
     .then(function (answer) {
@@ -77,7 +86,7 @@ function startPrompts() {
           break;
 
         case "Exit":
-          exit();
+          Exit();
           break;
       }
     });
@@ -218,9 +227,9 @@ function addDepartment() {
     });
 }
 let selectedEmployee;
+let selectedRole;
 // Create function to update employee role
 function updateEmployeeRole() {
-  console.log(employees);
   let nameChoices = [];
 
   for (i = 0; i < employees.length; i++) {
@@ -240,30 +249,40 @@ function updateEmployeeRole() {
     }])
     .then((answer) => {
       selectedEmployee = answer;
+      let roleChoices = [];
+
+      for (i = 0; i < roles.length; i++) {
+        roleChoices.push(
+          {
+            name: roles[i].title,
+            value: roles[i].id
+          });
+      }
+      console.log("Role Choices: ", roleChoices)
+
       inquirer.prompt([
         {
           name: "newRoleID",
           type: "list",
           message: "What role will they belong to?",
-          choices: [1, 2, 3, 4]
+          choices: roleChoices
         },
       ])
         .then(function (answer) {
-          console.log(selectedEmployee);
-          console.log(selectedEmployee.employee);
+          console.log(answer);
+          console.log(answer.newRoleID);
           connection.query(`UPDATE employee SET role_id =  ${answer.newRoleID} WHERE id = ${selectedEmployee.employee}`, function (err, result) {
             if (err) throw err;
-            viewEmployees();
+            // viewEmployees();
             console.log("Employee Role updated successfully")
             startPrompts();
           });
         });
-
     })
 
 
   // Create exit function
-  function exit() {
+  function Exit() {
     process.exit();
   }
 }
