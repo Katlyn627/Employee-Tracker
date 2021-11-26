@@ -13,7 +13,7 @@ const connection = mysql.createConnection({
   database: "employees_db"
 });
 
-let Exit = Exit();
+
 let employees = [];
 let roles = [];
 // let employeeResults = ("SELECT first_name + ' ' + last_name AS full_name");
@@ -239,7 +239,6 @@ function updateEmployeeRole() {
         value: employees[i].id
       });
   }
-  console.log(nameChoices);
   console.log("Updating an employee");
   inquirer.prompt([
     {
